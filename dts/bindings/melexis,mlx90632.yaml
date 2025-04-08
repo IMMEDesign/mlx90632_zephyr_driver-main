@@ -1,0 +1,5 @@
+description: MLX90632 infrared temperature sensor
+
+compatible: "melexis,mlx90632"
+
+include: [sensor-device.yaml, i2c-device.yaml]
