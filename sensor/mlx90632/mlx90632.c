@@ -980,7 +980,7 @@ static const struct sensor_driver_api mlx90632_api =
                           NULL,                                           \
                           &mlx90632_data##inst,                           \
                           &mlx90632_config##inst,                         \
-                          APPLICATION,                                    \
+                          POST_KERNEL,                                    \
                           CONFIG_SENSOR_INIT_PRIORITY,                   \
                           &mlx90632_api)
 
