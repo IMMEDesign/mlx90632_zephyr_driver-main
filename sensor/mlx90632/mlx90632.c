@@ -851,12 +851,21 @@ static int mlx90632_driver_init(const struct device *dev)
     write_buff[0] = (uint8_t)( MLX90632_EE_P_R >> 8 );
     write_buff[1] = (uint8_t)(MLX90632_EE_P_R & 0x00FF );
 
+    // !gb! extra init check
+    if (!i2c_is_ready_dt(&cfg->i2c)) {
+        printk("MLX90632 driver init: I2C bus not ready\n");
+        return -ENODEV;
+    }
+
+    printk("MLX90632 driver init: starting init\n");
+    printk("MLX90632 driver init: reading EEPROM from 0x%04X\n", MLX90632_EE_P_R);
     // convert to one larger read
     ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
     if (ret < 0) {
-        printk("mlx90632_driver_init: init read failed: %d\n", ret);
+        printk("MLX90632 driver init: init read failed %d\n", ret);
         return ret;
     }
+
     cal_data->P_R = (uint32_t)( read_buf[0] << 24 ) | (uint32_t)( read_buf[1] << 16 ) | (uint32_t)( read_buf[2] << 8 ) | (uint32_t)(read_buf[3]);
     cal_data->P_G = (uint32_t)( read_buf[4] << 24 ) | (uint32_t)( read_buf[5] << 16 ) | (uint32_t)( read_buf[6] << 8 ) | (uint32_t)(read_buf[7]);
     cal_data->P_T = (uint32_t)( read_buf[8] << 24 ) | (uint32_t)( read_buf[9] << 16 ) | (uint32_t)( read_buf[10] << 8 ) | (uint32_t)(read_buf[11]);
