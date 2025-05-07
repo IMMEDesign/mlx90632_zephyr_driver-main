@@ -968,13 +968,13 @@ static const struct sensor_driver_api mlx90632_api =
     .channel_get = mlx90632_channel_get,
 };
 
+// Defer init until app context (changed POST_KERNEL to APPLICATION)
 #define MLX90632_DEFINE(inst)												\
 	static struct mlx90632_data mlx90632_data##inst;                   		\
 																			\
 	static const struct mlx90632_config mlx90632_config##inst = {			\
 		.i2c = I2C_DT_SPEC_INST_GET(inst),                          		\
 	};  																	\
-    /* Defer init until app context (changed POST_KERNEL to APPLICATION) */ \
 	DEVICE_DT_INST_DEFINE(inst,												\
                 mlx90632_driver_init,										\
 				NULL,														\
