@@ -1040,6 +1040,7 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
     struct mlx90632_data *data = dev->data;
 
     if (!data->initialized) {
+        printk("MLX90632: first fetch\n", ret);
         int ret = mlx90632_init(dev);  // EEPROM read, DSP version check, etc.
         if (ret < 0) {
             printk("MLX90632: lazy init failed: %d\n", ret);
