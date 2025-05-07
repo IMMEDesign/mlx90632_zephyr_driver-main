@@ -1057,6 +1057,7 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
 }
 
 
+/*
 static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
 {
     double ambient, object;
@@ -1065,13 +1066,13 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
     ambient = mlx90632_calc_temp_ambient(data->ambient_new_raw, data->ambient_old_raw,
         data->P_T, data->P_R, data->P_G, data->P_O, data->Gb);
 
-    /* Get preprocessed temperatures needed for object temperature calculation */
+    // Get preprocessed temperatures needed for object temperature calculation
     double pre_ambient = mlx90632_preprocess_temp_ambient(data->ambient_new_raw,
         data->ambient_old_raw, data->Gb);
     double pre_object = mlx90632_preprocess_temp_object(data->object_new_raw, data->object_old_raw,
         data->ambient_new_raw, data->ambient_old_raw,
         data->Ka);
-    /* Calculate object temperature */
+    // Calculate object temperature
     object = mlx90632_calc_temp_object(pre_object, pre_ambient, data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
     
     //if(chan == 0)
@@ -1091,6 +1092,40 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
     }
     else {
         // Error
+        return -ENOTSUP;
+    }
+}
+*/
+
+static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
+{
+    struct mlx90632_data *data = dev->data;
+
+    double ambient = mlx90632_calc_temp_ambient(
+        data->ambient_new_raw, data->ambient_old_raw,
+        data->P_T, data->P_R, data->P_G, data->P_O, data->Gb);
+
+    double pre_ambient = mlx90632_preprocess_temp_ambient(data->ambient_new_raw,
+        data->ambient_old_raw, data->Gb);
+
+    double pre_object = mlx90632_preprocess_temp_object(data->object_new_raw,
+        data->object_old_raw, data->ambient_new_raw, data->ambient_old_raw, data->Ka);
+
+    double object = mlx90632_calc_temp_object(pre_object, pre_ambient,
+        data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
+
+    switch (chan) {
+    case SENSOR_CHAN_DIE_TEMP:
+        val->val1 = (int)object;
+        val->val2 = (int)((object - val->val1) * 1000000);
+        return 0;
+
+    case SENSOR_CHAN_AMBIENT_TEMP:
+        val->val1 = (int)ambient;
+        val->val2 = (int)((ambient - val->val1) * 1000000);
+        return 0;
+
+    default:
         return -ENOTSUP;
     }
 }
