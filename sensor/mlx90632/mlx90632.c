@@ -983,7 +983,7 @@ static const struct sensor_driver_api mlx90632_api =
 				&mlx90632_config##inst,										\
 				APPLICATION, 												\
 				CONFIG_SENSOR_INIT_PRIORITY, 								\
-				&mlx90632_api);
+				&mlx90632_api)
 
 DT_INST_FOREACH_STATUS_OKAY(MLX90632_DEFINE)
 
