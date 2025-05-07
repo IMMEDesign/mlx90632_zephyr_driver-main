@@ -168,6 +168,7 @@ typedef enum mlx90632_meas_e {
 #define MLX90632_MAX_NUMBER_MESUREMENT_READ_TRIES 100 /**< Maximum number of read tries before quiting with timeout error */
 
 struct mlx90632_data {
+    bool initialized;
     int16_t ambient_new_raw;
     int16_t ambient_old_raw;
     int16_t object_new_raw;
