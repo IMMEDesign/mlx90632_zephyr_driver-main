@@ -839,7 +839,7 @@ void msleep(int msecs)
     return;
 }
 
-static void mlx90632_driver_init(const struct device *dev)
+static int mlx90632_driver_init(const struct device *dev)
 {
 
 	int32_t ret;
@@ -853,7 +853,10 @@ static void mlx90632_driver_init(const struct device *dev)
 
     // convert to one larger read
     ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
-
+    if (ret < 0) {
+        printk("mlx90632_driver_init: init read failed: %d\n", ret);
+        return ret;
+    }
     cal_data->P_R = (uint32_t)( read_buf[0] << 24 ) | (uint32_t)( read_buf[1] << 16 ) | (uint32_t)( read_buf[2] << 8 ) | (uint32_t)(read_buf[3]);
     cal_data->P_G = (uint32_t)( read_buf[4] << 24 ) | (uint32_t)( read_buf[5] << 16 ) | (uint32_t)( read_buf[6] << 8 ) | (uint32_t)(read_buf[7]);
     cal_data->P_T = (uint32_t)( read_buf[8] << 24 ) | (uint32_t)( read_buf[9] << 16 ) | (uint32_t)( read_buf[10] << 8 ) | (uint32_t)(read_buf[11]);
@@ -899,7 +902,8 @@ static void mlx90632_driver_init(const struct device *dev)
 	// ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
 
 
-    return ret;
+    //return ret;
+    return 0;
 }
 
 
@@ -911,7 +915,7 @@ static void mlx90632_sample_fetch(const struct device *dev)
                            &data->object_new_raw, &data->object_old_raw);
 }
 
-static void mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
+static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
 {
     double ambient, object;
     struct mlx90632_data *data = dev->data;
@@ -928,16 +932,25 @@ static void mlx90632_channel_get(const struct device *dev, enum sensor_channel c
     /* Calculate object temperature */
     object = mlx90632_calc_temp_object(pre_object, pre_ambient, data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
     
-    if(chan == 0)
+    //if(chan == 0)
+    if(chan == SENSOR_CHAN_DIE_TEMP)
     {
         val->val1 = (int) object;
         val->val2 = (int) ((object - val->val1) * 100);
+        // Successful read
+        return 0;
     }
-    else if (chan == 1) {
+    //else if (chan == 1) {
+    else if (chan == SENSOR_CHAN_AMBIENT_TEMP) {
         val->val1 = (int) ambient;
         val->val2 = (int) ((ambient - val->val1) * 100);
+        // Successful read
+        return 0;
     }
-    else {}
+    else {
+        // Error
+        return -ENOTSUP;
+    }
 }
 
 static const struct sensor_driver_api mlx90632_api = 
