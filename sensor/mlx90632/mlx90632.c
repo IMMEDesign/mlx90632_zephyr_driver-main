@@ -1114,6 +1114,8 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
     double object = mlx90632_calc_temp_object(pre_object, pre_ambient,
         data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
 
+    printk("mlx90632_channel_get: chan = %d\n", chan);
+
     switch (chan) {
     case SENSOR_CHAN_DIE_TEMP:
         val->val1 = (int)object;
