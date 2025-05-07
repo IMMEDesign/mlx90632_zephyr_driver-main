@@ -970,20 +970,20 @@ static const struct sensor_driver_api mlx90632_api =
 
 /* Defer init until app context (changed POST_KERNEL to APPLICATION) */
 
-#define MLX90632_DEFINE(inst)												\
-	static struct mlx90632_data mlx90632_data##inst;                   		\
-																			\
-	static const struct mlx90632_config mlx90632_config##inst = {			\
-		.i2c = I2C_DT_SPEC_INST_GET(inst),                          		\
-	};  																	\
-	DEVICE_DT_INST_DEFINE(inst,												\
-                mlx90632_driver_init,										\
-				NULL,														\
-				&mlx90632_data##inst,										\
-				&mlx90632_config##inst,										\
-				APPLICATION, 												\
-				CONFIG_SENSOR_INIT_PRIORITY, 								\
-				&mlx90632_api)
+#define MLX90632_DEFINE(inst)                                             \
+    static struct mlx90632_data mlx90632_data##inst;                      \
+    static const struct mlx90632_config mlx90632_config##inst = {        \
+        .i2c = I2C_DT_SPEC_INST_GET(inst),                                \
+    };                                                                    \
+    DEVICE_DT_INST_DEFINE(inst,                                           \
+                          mlx90632_driver_init,                           \
+                          NULL,                                           \
+                          &mlx90632_data##inst,                           \
+                          &mlx90632_config##inst,                         \
+                          APPLICATION,                                    \
+                          CONFIG_SENSOR_INIT_PRIORITY,                   \
+                          &mlx90632_api)
+
 
 DT_INST_FOREACH_STATUS_OKAY(MLX90632_DEFINE)
 
