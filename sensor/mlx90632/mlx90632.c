@@ -968,7 +968,8 @@ static const struct sensor_driver_api mlx90632_api =
     .channel_get = mlx90632_channel_get,
 };
 
-// Defer init until app context (changed POST_KERNEL to APPLICATION)
+/* Defer init until app context (changed POST_KERNEL to APPLICATION) */
+
 #define MLX90632_DEFINE(inst)												\
 	static struct mlx90632_data mlx90632_data##inst;                   		\
 																			\
@@ -980,7 +981,7 @@ static const struct sensor_driver_api mlx90632_api =
 				NULL,														\
 				&mlx90632_data##inst,										\
 				&mlx90632_config##inst,										\
-                APPLICATION,                                                \
+				APPLICATION, 												\
 				CONFIG_SENSOR_INIT_PRIORITY, 								\
 				&mlx90632_api);
 
