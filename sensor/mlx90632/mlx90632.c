@@ -509,9 +509,9 @@ int32_t mlx90632_init(const struct device *dev)
         return ret;
     }
 
-    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
-        return ERANGE;
-    }
+//    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
+//        return ERANGE;
+//    }
 
     // 👇 Load full calibration block
     uint8_t write_buff[2] = {
@@ -569,6 +569,11 @@ int32_t mlx90632_init(const struct device *dev)
     // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
     // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
     // ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
+
+    // !gb! moved here
+    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
+        return ERANGE;
+    }
 
     return 0;
 }
