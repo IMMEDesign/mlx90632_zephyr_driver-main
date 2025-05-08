@@ -518,6 +518,9 @@ int32_t mlx90632_init(const struct device *dev)
         (uint8_t)(MLX90632_EE_P_R >> 8),
         (uint8_t)(MLX90632_EE_P_R & 0x00FF)
     };
+
+
+    /*
     uint8_t read_buf[76];
 
     ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
@@ -547,28 +550,31 @@ int32_t mlx90632_init(const struct device *dev)
     cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
     cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
     cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
+    */
 
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_O, &cal_data->P_O);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Aa, &cal_data->Aa);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ab, &cal_data->Ab);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ba, &cal_data->Ba);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Bb, &cal_data->Bb);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ca, &cal_data->Ca);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Cb, &cal_data->Cb);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Da, &cal_data->Da);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Db, &cal_data->Db);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ea, &cal_data->Ea);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Eb, &cal_data->Eb);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fa, &cal_data->Fa);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fb, &cal_data->Fb);
-    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ga, &cal_data->Ga);
-    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Gb, &cal_data->Gb); 
-    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
-    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
-    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_O, &cal_data->P_O);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Aa, &cal_data->Aa);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ab, &cal_data->Ab);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ba, &cal_data->Ba);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Bb, &cal_data->Bb);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ca, &cal_data->Ca);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Cb, &cal_data->Cb);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Da, &cal_data->Da);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Db, &cal_data->Db);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ea, &cal_data->Ea);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Eb, &cal_data->Eb);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fa, &cal_data->Fa);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fb, &cal_data->Fb);
+    ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ga, &cal_data->Ga);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Gb, &cal_data->Gb); 
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
+
+    emissivity = 0.98f;     // !gb! temp
 
     return 0;
 }
