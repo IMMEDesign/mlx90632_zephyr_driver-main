@@ -446,78 +446,131 @@ double mlx90632_calc_temp_object_reflected(int32_t object, int32_t ambient, doub
     return temp;
 }
 
+/*
 int32_t mlx90632_init(const struct device *dev)
 {
     int32_t ret;
     uint16_t eeprom_version, reg_status;
-    struct mlx90632_data *cal_data = dev->data;
-    const struct mlx90632_config *cfg = dev->config;
-    uint8_t write_buff[2];
-    uint8_t read_buf[76];
 
     ret = mlx90632_i2c_read(dev, MLX90632_EE_VERSION, &eeprom_version);
-    if (ret < 0) 
+    if (ret < 0)
     {
         return ret;
     }
 
-    if ((eeprom_version & 0x00FF) != MLX90632_DSPv5) 
+    if ((eeprom_version & 0x00FF) != MLX90632_DSPv5)
     {
         // this here can fail because of big/little endian of cpu/i2c
         return -EPROTONOSUPPORT;
     }
 
     ret = mlx90632_i2c_read(dev, MLX90632_REG_STATUS, &reg_status);
-    if (ret < 0) 
-    {
+    if (ret < 0)
         return ret;
-    }
 
     // Prepare a clean start with setting NEW_DATA to 0
     ret = mlx90632_i2c_write(dev, MLX90632_REG_STATUS, reg_status & ~(MLX90632_STAT_DATA_RDY));
-    if (ret < 0) 
-    {
+    if (ret < 0)
         return ret;
-    }
 
-    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) 
+    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY)
     {
         return ERANGE;
     }
 
-    // !gb! Moved this code here, from mlx90632_driver_init(), so that we don't call
-    //      i2c_write_read_dt() to early (before i2c device is powered up etc.)
+    return 0;
+}
+*/
+
+int32_t mlx90632_init(const struct device *dev)
+{
+    int32_t ret;
+    uint16_t eeprom_version, reg_status;
+    struct mlx90632_data *cal_data = dev->data;
+    const struct mlx90632_config *cfg = dev->config;
+
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_VERSION, &eeprom_version);
+    if (ret < 0) {
+        return ret;
+    }
+
+    if ((eeprom_version & 0x00FF) != MLX90632_DSPv5) {
+        return -EPROTONOSUPPORT;
+    }
+
+    ret = mlx90632_i2c_read(dev, MLX90632_REG_STATUS, &reg_status);
+    if (ret < 0) {
+        return ret;
+    }
+
+    ret = mlx90632_i2c_write(dev, MLX90632_REG_STATUS,
+                             reg_status & ~(MLX90632_STAT_DATA_RDY));
+    if (ret < 0) {
+        return ret;
+    }
+
+    if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
+        return ERANGE;
+    }
 
     // 👇 Load full calibration block
-    write_buff[0] = (uint8_t)( MLX90632_EE_P_R >> 8 );
-    write_buff[1] = (uint8_t)(MLX90632_EE_P_R & 0x00FF );
+    uint8_t write_buff[2] = {
+        (uint8_t)(MLX90632_EE_P_R >> 8),
+        (uint8_t)(MLX90632_EE_P_R & 0x00FF)
+    };
+    uint8_t read_buf[76];
 
-    // convert to one larger read
     ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
+    if (ret < 0) {
+        printk("MLX90632: EEPROM read failed: %d\n", ret);
+        return ret;
+    }
 
-    cal_data->P_R = (uint32_t)( read_buf[0] << 24 ) | (uint32_t)( read_buf[1] << 16 ) | (uint32_t)( read_buf[2] << 8 ) | (uint32_t)(read_buf[3]);
-    cal_data->P_G = (uint32_t)( read_buf[4] << 24 ) | (uint32_t)( read_buf[5] << 16 ) | (uint32_t)( read_buf[6] << 8 ) | (uint32_t)(read_buf[7]);
-    cal_data->P_T = (uint32_t)( read_buf[8] << 24 ) | (uint32_t)( read_buf[9] << 16 ) | (uint32_t)( read_buf[10] << 8 ) | (uint32_t)(read_buf[11]);
-    cal_data->P_O = (uint32_t)( read_buf[12] << 24 ) | (uint32_t)( read_buf[13] << 16 ) | (uint32_t)( read_buf[14] << 8 ) | (uint32_t)(read_buf[15]);
-    cal_data->Aa = (uint32_t)( read_buf[16] << 24 ) | (uint32_t)( read_buf[17] << 16 ) | (uint32_t)( read_buf[18] << 8 ) | (uint32_t)(read_buf[19]);
-    cal_data->Ab = (uint32_t)( read_buf[20] << 24 ) | (uint32_t)( read_buf[21] << 16 ) | (uint32_t)( read_buf[22] << 8 ) | (uint32_t)(read_buf[23]);
-    cal_data->Ba = (uint32_t)( read_buf[24] << 24 ) | (uint32_t)( read_buf[25] << 16 ) | (uint32_t)( read_buf[26] << 8 ) | (uint32_t)(read_buf[27]);
-    cal_data->Bb = (uint32_t)( read_buf[28] << 24 ) | (uint32_t)( read_buf[29] << 16 ) | (uint32_t)( read_buf[30] << 8 ) | (uint32_t)(read_buf[31]);
-    cal_data->Ca = (uint32_t)( read_buf[32] << 24 ) | (uint32_t)( read_buf[33] << 16 ) | (uint32_t)( read_buf[34] << 8 ) | (uint32_t)(read_buf[35]);
-    cal_data->Cb = (uint32_t)( read_buf[36] << 24 ) | (uint32_t)( read_buf[37] << 16 ) | (uint32_t)( read_buf[38] << 8 ) | (uint32_t)(read_buf[39]);
-    cal_data->Da = (uint32_t)( read_buf[40] << 24 ) | (uint32_t)( read_buf[41] << 16 ) | (uint32_t)( read_buf[42] << 8 ) | (uint32_t)(read_buf[43]);
-    cal_data->Db = (uint32_t)( read_buf[44] << 24 ) | (uint32_t)( read_buf[45] << 16 ) | (uint32_t)( read_buf[46] << 8 ) | (uint32_t)(read_buf[47]);
-    cal_data->Ea = (uint32_t)( read_buf[48] << 24 ) | (uint32_t)( read_buf[49] << 16 ) | (uint32_t)( read_buf[50] << 8 ) | (uint32_t)(read_buf[51]);
-    cal_data->Eb = (uint32_t)( read_buf[52] << 24 ) | (uint32_t)( read_buf[53] << 16 ) | (uint32_t)( read_buf[54] << 8 ) | (uint32_t)(read_buf[55]);
-    cal_data->Fa = (uint32_t)( read_buf[56] << 24 ) | (uint32_t)( read_buf[57] << 16 ) | (uint32_t)( read_buf[58] << 8 ) | (uint32_t)(read_buf[59]);
-    cal_data->Fb = (uint32_t)( read_buf[60] << 24 ) | (uint32_t)( read_buf[61] << 16 ) | (uint32_t)( read_buf[62] << 8 ) | (uint32_t)(read_buf[63]);
-    cal_data->Ga = (uint32_t)( read_buf[64] << 24 ) | (uint32_t)( read_buf[65] << 16 ) | (uint32_t)( read_buf[66] << 8 ) | (uint32_t)(read_buf[67]);
-    cal_data->Gb = (uint16_t)( read_buf[68] << 8) | (uint16_t)(read_buf[69]);
-    cal_data->Ka = (uint16_t)( read_buf[70] << 8) | (uint16_t)(read_buf[71]);
-    cal_data->Ha = (uint16_t)( read_buf[72] << 8) | (uint16_t)(read_buf[73]);
-    cal_data->Hb = (uint16_t)( read_buf[74] << 8) | (uint16_t)(read_buf[75]);
+    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) | (read_buf[2] << 8) | read_buf[3];
+    cal_data->P_G = (read_buf[4] << 24) | (read_buf[5] << 16) | (read_buf[6] << 8) | read_buf[7];
+    cal_data->P_T = (read_buf[8] << 24) | (read_buf[9] << 16) | (read_buf[10] << 8) | read_buf[11];
+    cal_data->P_O = (read_buf[12] << 24) | (read_buf[13] << 16) | (read_buf[14] << 8) | read_buf[15];
+    cal_data->Aa  = (read_buf[16] << 24) | (read_buf[17] << 16) | (read_buf[18] << 8) | read_buf[19];
+    cal_data->Ab  = (read_buf[20] << 24) | (read_buf[21] << 16) | (read_buf[22] << 8) | read_buf[23];
+    cal_data->Ba  = (read_buf[24] << 24) | (read_buf[25] << 16) | (read_buf[26] << 8) | read_buf[27];
+    cal_data->Bb  = (read_buf[28] << 24) | (read_buf[29] << 16) | (read_buf[30] << 8) | read_buf[31];
+    cal_data->Ca  = (read_buf[32] << 24) | (read_buf[33] << 16) | (read_buf[34] << 8) | read_buf[35];
+    cal_data->Cb  = (read_buf[36] << 24) | (read_buf[37] << 16) | (read_buf[38] << 8) | read_buf[39];
+    cal_data->Da  = (read_buf[40] << 24) | (read_buf[41] << 16) | (read_buf[42] << 8) | read_buf[43];
+    cal_data->Db  = (read_buf[44] << 24) | (read_buf[45] << 16) | (read_buf[46] << 8) | read_buf[47];
+    cal_data->Ea  = (read_buf[48] << 24) | (read_buf[49] << 16) | (read_buf[50] << 8) | read_buf[51];
+    cal_data->Eb  = (read_buf[52] << 24) | (read_buf[53] << 16) | (read_buf[54] << 8) | read_buf[55];
+    cal_data->Fa  = (read_buf[56] << 24) | (read_buf[57] << 16) | (read_buf[58] << 8) | read_buf[59];
+    cal_data->Fb  = (read_buf[60] << 24) | (read_buf[61] << 16) | (read_buf[62] << 8) | read_buf[63];
+    cal_data->Ga  = (read_buf[64] << 24) | (read_buf[65] << 16) | (read_buf[66] << 8) | read_buf[67];
+    cal_data->Gb  = (read_buf[68] << 8)  | read_buf[69];
+    cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
+    cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
+    cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
 
-    return ret;
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_O, &cal_data->P_O);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Aa, &cal_data->Aa);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ab, &cal_data->Ab);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ba, &cal_data->Ba);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Bb, &cal_data->Bb);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ca, &cal_data->Ca);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Cb, &cal_data->Cb);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Da, &cal_data->Da);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Db, &cal_data->Db);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ea, &cal_data->Ea);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Eb, &cal_data->Eb);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fa, &cal_data->Fa);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fb, &cal_data->Fb);
+    // ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ga, &cal_data->Ga);
+    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Gb, &cal_data->Gb); 
+    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
+    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
+    // ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
+
+    return 0;
 }
 
 int32_t mlx90632_addressed_reset(const struct device *dev)
@@ -879,6 +932,84 @@ void msleep(int msecs)
     return;
 }
 
+/*
+static int mlx90632_driver_init(const struct device *dev)
+{
+
+	int32_t ret;
+    struct mlx90632_data *cal_data = dev->data;
+    const struct mlx90632_config *cfg = dev->config;
+    uint8_t write_buff[2];
+    uint8_t read_buf[76];
+
+    write_buff[0] = (uint8_t)( MLX90632_EE_P_R >> 8 );
+    write_buff[1] = (uint8_t)(MLX90632_EE_P_R & 0x00FF );
+
+    // extra init check
+    if (!i2c_is_ready_dt(&cfg->i2c)) {
+        printk("MLX90632 driver init: I2C bus not ready\n");
+        return -ENODEV;
+    }
+
+    printk("MLX90632 driver init: starting init\n");
+    printk("MLX90632 driver init: reading EEPROM from 0x%04X\n", MLX90632_EE_P_R);
+    // convert to one larger read
+    ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
+    if (ret < 0) {
+        printk("MLX90632 driver init: init read failed %d\n", ret);
+        return ret;
+    }
+
+    cal_data->P_R = (uint32_t)( read_buf[0] << 24 ) | (uint32_t)( read_buf[1] << 16 ) | (uint32_t)( read_buf[2] << 8 ) | (uint32_t)(read_buf[3]);
+    cal_data->P_G = (uint32_t)( read_buf[4] << 24 ) | (uint32_t)( read_buf[5] << 16 ) | (uint32_t)( read_buf[6] << 8 ) | (uint32_t)(read_buf[7]);
+    cal_data->P_T = (uint32_t)( read_buf[8] << 24 ) | (uint32_t)( read_buf[9] << 16 ) | (uint32_t)( read_buf[10] << 8 ) | (uint32_t)(read_buf[11]);
+    cal_data->P_O = (uint32_t)( read_buf[12] << 24 ) | (uint32_t)( read_buf[13] << 16 ) | (uint32_t)( read_buf[14] << 8 ) | (uint32_t)(read_buf[15]);
+    cal_data->Aa = (uint32_t)( read_buf[16] << 24 ) | (uint32_t)( read_buf[17] << 16 ) | (uint32_t)( read_buf[18] << 8 ) | (uint32_t)(read_buf[19]);
+    cal_data->Ab = (uint32_t)( read_buf[20] << 24 ) | (uint32_t)( read_buf[21] << 16 ) | (uint32_t)( read_buf[22] << 8 ) | (uint32_t)(read_buf[23]);
+    cal_data->Ba = (uint32_t)( read_buf[24] << 24 ) | (uint32_t)( read_buf[25] << 16 ) | (uint32_t)( read_buf[26] << 8 ) | (uint32_t)(read_buf[27]);
+    cal_data->Bb = (uint32_t)( read_buf[28] << 24 ) | (uint32_t)( read_buf[29] << 16 ) | (uint32_t)( read_buf[30] << 8 ) | (uint32_t)(read_buf[31]);
+    cal_data->Ca = (uint32_t)( read_buf[32] << 24 ) | (uint32_t)( read_buf[33] << 16 ) | (uint32_t)( read_buf[34] << 8 ) | (uint32_t)(read_buf[35]);
+    cal_data->Cb = (uint32_t)( read_buf[36] << 24 ) | (uint32_t)( read_buf[37] << 16 ) | (uint32_t)( read_buf[38] << 8 ) | (uint32_t)(read_buf[39]);
+    cal_data->Da = (uint32_t)( read_buf[40] << 24 ) | (uint32_t)( read_buf[41] << 16 ) | (uint32_t)( read_buf[42] << 8 ) | (uint32_t)(read_buf[43]);
+    cal_data->Db = (uint32_t)( read_buf[44] << 24 ) | (uint32_t)( read_buf[45] << 16 ) | (uint32_t)( read_buf[46] << 8 ) | (uint32_t)(read_buf[47]);
+    cal_data->Ea = (uint32_t)( read_buf[48] << 24 ) | (uint32_t)( read_buf[49] << 16 ) | (uint32_t)( read_buf[50] << 8 ) | (uint32_t)(read_buf[51]);
+    cal_data->Eb = (uint32_t)( read_buf[52] << 24 ) | (uint32_t)( read_buf[53] << 16 ) | (uint32_t)( read_buf[54] << 8 ) | (uint32_t)(read_buf[55]);
+    cal_data->Fa = (uint32_t)( read_buf[56] << 24 ) | (uint32_t)( read_buf[57] << 16 ) | (uint32_t)( read_buf[58] << 8 ) | (uint32_t)(read_buf[59]);
+    cal_data->Fb = (uint32_t)( read_buf[60] << 24 ) | (uint32_t)( read_buf[61] << 16 ) | (uint32_t)( read_buf[62] << 8 ) | (uint32_t)(read_buf[63]);
+    cal_data->Ga = (uint32_t)( read_buf[64] << 24 ) | (uint32_t)( read_buf[65] << 16 ) | (uint32_t)( read_buf[66] << 8 ) | (uint32_t)(read_buf[67]);
+    cal_data->Gb = (uint16_t)( read_buf[68] << 8) | (uint16_t)(read_buf[69]);
+    cal_data->Ka = (uint16_t)( read_buf[70] << 8) | (uint16_t)(read_buf[71]);
+    cal_data->Ha = (uint16_t)( read_buf[72] << 8) | (uint16_t)(read_buf[73]);
+    cal_data->Hb = (uint16_t)( read_buf[74] << 8) | (uint16_t)(read_buf[75]);
+
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_O, &cal_data->P_O);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Aa, &cal_data->Aa);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ab, &cal_data->Ab);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ba, &cal_data->Ba);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Bb, &cal_data->Bb);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ca, &cal_data->Ca);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Cb, &cal_data->Cb);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Da, &cal_data->Da);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Db, &cal_data->Db);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ea, &cal_data->Ea);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Eb, &cal_data->Eb);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fa, &cal_data->Fa);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Fb, &cal_data->Fb);
+	// ret = mlx90632_i2c_read32(dev, MLX90632_EE_Ga, &cal_data->Ga);
+	// ret = mlx90632_i2c_read(dev, MLX90632_EE_Gb, &cal_data->Gb); 
+	// ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
+	// ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
+	// ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
+
+
+    //return ret;
+    return 0;
+}
+*/
+
 static int mlx90632_driver_init(const struct device *dev)
 {
     const struct mlx90632_config *cfg = dev->config;
@@ -894,6 +1025,16 @@ static int mlx90632_driver_init(const struct device *dev)
 }
 
 
+/*
+static void mlx90632_sample_fetch(const struct device *dev)
+{
+    struct mlx90632_data *data = dev->data;
+
+    mlx90632_read_temp_raw(dev, &data->ambient_new_raw, &data->ambient_old_raw,
+                           &data->object_new_raw, &data->object_old_raw);
+}
+*/
+
 static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
     struct mlx90632_data *data = dev->data;
@@ -908,10 +1049,15 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
         data->initialized = true;
     }
 
-    return mlx90632_read_temp_raw(dev, &data->ambient_new_raw, &data->ambient_old_raw,
-                                       &data->object_new_raw, &data->object_old_raw);
+    return mlx90632_read_temp_raw(dev,
+        &data->ambient_new_raw,
+        &data->ambient_old_raw,
+        &data->object_new_raw,
+        &data->object_old_raw);
 }
 
+
+/*
 static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
 {
     double ambient, object;
@@ -920,29 +1066,70 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
     ambient = mlx90632_calc_temp_ambient(data->ambient_new_raw, data->ambient_old_raw,
         data->P_T, data->P_R, data->P_G, data->P_O, data->Gb);
 
-    /* Get preprocessed temperatures needed for object temperature calculation */
+    // Get preprocessed temperatures needed for object temperature calculation
     double pre_ambient = mlx90632_preprocess_temp_ambient(data->ambient_new_raw,
         data->ambient_old_raw, data->Gb);
     double pre_object = mlx90632_preprocess_temp_object(data->object_new_raw, data->object_old_raw,
         data->ambient_new_raw, data->ambient_old_raw,
         data->Ka);
-    /* Calculate object temperature */
+    // Calculate object temperature
     object = mlx90632_calc_temp_object(pre_object, pre_ambient, data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
     
+    //if(chan == 0)
     if(chan == SENSOR_CHAN_DIE_TEMP)
     {
         val->val1 = (int) object;
         val->val2 = (int) ((object - val->val1) * 100);
+        // Successful read
         return 0;
     }
+    //else if (chan == 1) {
     else if (chan == SENSOR_CHAN_AMBIENT_TEMP) {
         val->val1 = (int) ambient;
         val->val2 = (int) ((ambient - val->val1) * 100);
+        // Successful read
         return 0;
     }
     else {
+        // Error
         return -ENOTSUP;
-    }    
+    }
+}
+*/
+
+static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
+{
+    struct mlx90632_data *data = dev->data;
+
+    double ambient = mlx90632_calc_temp_ambient(
+        data->ambient_new_raw, data->ambient_old_raw,
+        data->P_T, data->P_R, data->P_G, data->P_O, data->Gb);
+
+    double pre_ambient = mlx90632_preprocess_temp_ambient(data->ambient_new_raw,
+        data->ambient_old_raw, data->Gb);
+
+    double pre_object = mlx90632_preprocess_temp_object(data->object_new_raw,
+        data->object_old_raw, data->ambient_new_raw, data->ambient_old_raw, data->Ka);
+
+    double object = mlx90632_calc_temp_object(pre_object, pre_ambient,
+        data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
+
+    printk("mlx90632_channel_get: chan = %d\n", chan);
+
+    switch (chan) {
+    case SENSOR_CHAN_DIE_TEMP:
+        val->val1 = (int)object;
+        val->val2 = (int)((object - val->val1) * 1000000);
+        return 0;
+
+    case SENSOR_CHAN_AMBIENT_TEMP:
+        val->val1 = (int)ambient;
+        val->val2 = (int)((ambient - val->val1) * 1000000);
+        return 0;
+
+    default:
+        return -ENOTSUP;
+    }
 }
 
 static const struct sensor_driver_api mlx90632_api = 
