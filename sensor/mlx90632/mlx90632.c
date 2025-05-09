@@ -1142,7 +1142,10 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
         // This code was moved here, to be calle don the first fetch, rather than
         // on initialisation, because the library initialisation occurs BEFORE
         // the i2c bus / devices are ready.
-        printk("MLX90632: first fetch\n");
+
+        // !gb! trying this
+        usleep(150, 200);        printk("MLX90632: first fetch\n");
+        
         int ret = mlx90632_init(dev);  // EEPROM read, DSP version check, etc.
         if (ret < 0) {
             printk("MLX90632: lazy init failed: %d\n", ret);
