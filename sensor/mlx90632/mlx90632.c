@@ -511,6 +511,7 @@ int32_t mlx90632_init(const struct device *dev)
     cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
     */
 
+    uint8_t read_buf[4];
     uint8_t write_buff2[2] ;
 
     write_buff[2] = {(uint8_t)(MLX90632_EE_P_R >> 8), (uint8_t)(MLX90632_EE_P_R & 0x00FF)};
