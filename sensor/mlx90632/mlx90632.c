@@ -526,10 +526,10 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read32(MLX90632_EE_Fa, &cal_data->Fa);
     ret = mlx90632_i2c_read32(MLX90632_EE_Fb, &cal_data->Fb);
     ret = mlx90632_i2c_read32(MLX90632_EE_Ga, &cal_data->Ga);
-    ret = mlx90632_i2c_read(MLX90632_EE_Gb, &cal_data->Gb); 
-    ret = mlx90632_i2c_read(MLX90632_EE_Ka, &cal_data->Ka);
-    ret = mlx90632_i2c_read(MLX90632_EE_Ha, &cal_data->Ha);
-    ret = mlx90632_i2c_read(MLX90632_EE_Hb, &cal_data->Hb);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Gb, &cal_data->Gb); 
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
+    ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
 
 
     // !gb! moved here
