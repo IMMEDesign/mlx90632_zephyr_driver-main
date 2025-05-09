@@ -559,8 +559,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_P_R read failed: %d\n", ret);
         return ret;
     }
-    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->P_R = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_P_G >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_P_G & 0x00FF);
@@ -569,8 +569,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_P_G read failed: %d\n", ret);
         return ret;
     }
-    cal_data->P_G = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->P_G = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_P_T >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_P_T & 0x00FF);
@@ -579,8 +579,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_P_T read failed: %d\n", ret);
         return ret;
     }
-    cal_data->P_T = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->P_T = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_P_O >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_P_O & 0x00FF);
@@ -589,8 +589,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_P_O read failed: %d\n", ret);
         return ret;
     }
-    cal_data->P_O = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->P_O = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Aa >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Aa & 0x00FF);
@@ -599,8 +599,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Aa read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Aa = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Aa = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ab >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ab & 0x00FF);
@@ -609,8 +609,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ab read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ab = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ab = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ba >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ba & 0x00FF);
@@ -619,8 +619,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ba read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ba = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ba = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Bb >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Bb & 0x00FF);
@@ -629,8 +629,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Bb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Bb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Bb = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ca >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ca & 0x00FF);
@@ -639,8 +639,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ca read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ca = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ca = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Cb >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Cb & 0x00FF);
@@ -649,8 +649,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Cb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Cb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Cb = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Da >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Da & 0x00FF);
@@ -659,8 +659,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Da read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Da = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Da = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Db >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Db & 0x00FF);
@@ -669,8 +669,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Db read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Db = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Db = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ea >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ea & 0x00FF);
@@ -679,8 +679,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ea read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ea = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ea = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Eb >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Eb & 0x00FF);
@@ -689,8 +689,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Eb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Eb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Eb = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Fa >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Fa & 0x00FF);
@@ -699,8 +699,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Fa read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Fa = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Fa = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Fb >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Fb & 0x00FF);
@@ -709,8 +709,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Fb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Fb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Fb = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ga >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ga & 0x00FF);
@@ -719,8 +719,8 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ga read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ga = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ga = (read_buf[2] << 24) | (read_buf[3] << 16) |
+                    (read_buf[0] << 8)  |  read_buf[1];
 
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Gb >> 8);
@@ -730,8 +730,7 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Gb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Gb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Gb = (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ka >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ka & 0x00FF);
@@ -740,8 +739,7 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ka read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ka = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ka = (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Ha >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Ha & 0x00FF);
@@ -750,8 +748,7 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Ha read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Ha = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Ha = (read_buf[0] << 8)  |  read_buf[1];
 
     write_buff[0] = (uint8_t)(MLX90632_EE_Hb >> 8);
     write_buff[1] = (uint8_t)(MLX90632_EE_Hb & 0x00FF);
@@ -760,8 +757,7 @@ int32_t mlx90632_init(const struct device *dev)
         printk("MLX90632: MLX90632_EE_Hb read failed: %d\n", ret);
         return ret;
     }
-    cal_data->Hb = (read_buf[0] << 24) | (read_buf[1] << 16) |
-                    (read_buf[2] << 8)  |  read_buf[3];
+    cal_data->Hb = (read_buf[0] << 8)  |  read_buf[1];
 
 
     /*
