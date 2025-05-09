@@ -73,6 +73,9 @@ int32_t mlx90632_start_measurement(const struct device *dev)
 
     ret = mlx90632_wait_for_measurement(dev);
 
+    // !gb! temp
+    ret = 1;
+
     return ret;
 }
 
