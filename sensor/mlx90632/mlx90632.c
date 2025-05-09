@@ -750,13 +750,13 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
     */
 
+    // !gb! Added here, as taken from Niall's working project
+    mlx90632_set_emissivity(0.98f);
+
     // !gb! moved here
     if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
         return ERANGE;
     }
-
-    // !gb! Added here, as taken from Niall's working project
-    mlx90632_set_emissivity(0.98f);
 
     return 0;
 }
