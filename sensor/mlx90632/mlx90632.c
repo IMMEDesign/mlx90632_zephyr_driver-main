@@ -1137,6 +1137,7 @@ static int mlx90632_driver_init(const struct device *dev)
 static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
     struct mlx90632_data *data = dev->data;
+    int ret = 0;
 
     if (!data->initialized) {
         // This code was moved here, to be calle don the first fetch, rather than
@@ -1162,8 +1163,10 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
         data->initialized = true;
     }
 
-    return mlx90632_read_temp_raw(dev, &data->ambient_new_raw, &data->ambient_old_raw,
+    ret = mlx90632_read_temp_raw(dev, &data->ambient_new_raw, &data->ambient_old_raw,
                                        &data->object_new_raw, &data->object_old_raw);
+
+    return ret;
 }
 
 static int mlx90632_channel_get(const struct device *dev, enum sensor_channel chan, struct sensor_value *val)
