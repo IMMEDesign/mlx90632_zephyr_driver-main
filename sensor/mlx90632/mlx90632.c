@@ -21,71 +21,6 @@ static const char mlx90632version[] __attribute__((used)) = { VERSION };
 #define STATIC static
 #endif
 
-int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value)
-{
-    //printk("READING FROM MLX TEMP\n");
-    uint8_t buffer[2]; // Buffer to store 2 bytes read from the I2C device
-    uint8_t i2c_write_buff[2];
-    int32_t ret;
-    const struct mlx90632_config *cfg = dev->config;
-
-
-    i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
-    i2c_write_buff[1] = ( register_address & 0xFF);
-
-    ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 2);
-    
-    if (ret < 0) {
-        return ret; // Return error code if i2c_read fails
-    }
-
-    // Combine the two bytes into a 16-bit value (assuming big-endian order from the device)
-    *value = ((uint16_t)buffer[0] << 8) | buffer[1];
-
-    return 0; // Success
-}
-int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value)
-{
-    //printk("READING FROM MLX TEMP\n");
-    uint8_t buffer[4]; // Buffer to store 4 bytes read from the I2C device
-    uint8_t i2c_write_buff[2];
-    int32_t ret;
-
-    const struct mlx90632_config *cfg = dev->config;
-
-
-    i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
-    i2c_write_buff[1] = ( register_address & 0xFF);
-
-    ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 4);
-    if (ret < 0) {
-        return ret; // Return error code if i2c_read fails
-    }
-
-    // Combine the four bytes into a 32-bit value (assuming big-endian order from the device)
-    *value = ((uint32_t)buffer[2] << 24) | ((uint32_t)buffer[3] << 16) | ((uint32_t)buffer[0] << 8) | (uint32_t)buffer[1];
-
-    return 0; // Success
-}
-int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, uint16_t value)
-{
-
-    uint8_t data[4];
-    int ret;
-    const struct mlx90632_config *cfg = dev->config;
-
-    data[0] = (uint8_t)(register_address >> 8);
-    data[1] = (uint8_t)(register_address & 0xFF);
-
-    data[2] = (uint8_t)(value >> 8);
-    data[3] = (uint8_t)(value & 0xFF);
-
-
-    ret = i2c_write_dt(&cfg->i2c, data, 4);
-
-    return ret;
-}
-
 int32_t mlx90632_trigger_measurement(const struct device *dev)
 {
     uint16_t reg_status;
@@ -539,41 +474,42 @@ int32_t mlx90632_init(const struct device *dev)
         return ret;
     }
 
-//    // 👇 Load full calibration block
-//    uint8_t write_buff[2] = {
-//        (uint8_t)(MLX90632_EE_P_R >> 8),
-//        (uint8_t)(MLX90632_EE_P_R & 0x00FF)
-//    };
-//    uint8_t read_buf[76];
-//
-//    ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
-//    if (ret < 0) {
-//        printk("MLX90632: EEPROM read failed: %d\n", ret);
-//        return ret;
-//    }
-//
-//    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) | (read_buf[2] << 8) | read_buf[3];
-//    cal_data->P_G = (read_buf[4] << 24) | (read_buf[5] << 16) | (read_buf[6] << 8) | read_buf[7];
-//    cal_data->P_T = (read_buf[8] << 24) | (read_buf[9] << 16) | (read_buf[10] << 8) | read_buf[11];
-//    cal_data->P_O = (read_buf[12] << 24) | (read_buf[13] << 16) | (read_buf[14] << 8) | read_buf[15];
-//    cal_data->Aa  = (read_buf[16] << 24) | (read_buf[17] << 16) | (read_buf[18] << 8) | read_buf[19];
-//    cal_data->Ab  = (read_buf[20] << 24) | (read_buf[21] << 16) | (read_buf[22] << 8) | read_buf[23];
-//    cal_data->Ba  = (read_buf[24] << 24) | (read_buf[25] << 16) | (read_buf[26] << 8) | read_buf[27];
-//    cal_data->Bb  = (read_buf[28] << 24) | (read_buf[29] << 16) | (read_buf[30] << 8) | read_buf[31];
-//    cal_data->Ca  = (read_buf[32] << 24) | (read_buf[33] << 16) | (read_buf[34] << 8) | read_buf[35];
-//    cal_data->Cb  = (read_buf[36] << 24) | (read_buf[37] << 16) | (read_buf[38] << 8) | read_buf[39];
-//    cal_data->Da  = (read_buf[40] << 24) | (read_buf[41] << 16) | (read_buf[42] << 8) | read_buf[43];
-//    cal_data->Db  = (read_buf[44] << 24) | (read_buf[45] << 16) | (read_buf[46] << 8) | read_buf[47];
-//    cal_data->Ea  = (read_buf[48] << 24) | (read_buf[49] << 16) | (read_buf[50] << 8) | read_buf[51];
-//    cal_data->Eb  = (read_buf[52] << 24) | (read_buf[53] << 16) | (read_buf[54] << 8) | read_buf[55];
-//    cal_data->Fa  = (read_buf[56] << 24) | (read_buf[57] << 16) | (read_buf[58] << 8) | read_buf[59];
-//    cal_data->Fb  = (read_buf[60] << 24) | (read_buf[61] << 16) | (read_buf[62] << 8) | read_buf[63];
-//    cal_data->Ga  = (read_buf[64] << 24) | (read_buf[65] << 16) | (read_buf[66] << 8) | read_buf[67];
-//    cal_data->Gb  = (read_buf[68] << 8)  | read_buf[69];
-//    cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
-//    cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
-//    cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
+    // Load full calibration block
+    uint8_t write_buff[2] = {
+        (uint8_t)(MLX90632_EE_P_R >> 8),
+        (uint8_t)(MLX90632_EE_P_R & 0x00FF)
+    };
+    uint8_t read_buf[76];
 
+    ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
+    if (ret < 0) {
+        printk("MLX90632: EEPROM read failed: %d\n", ret);
+        return ret;
+    }
+
+    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) | (read_buf[2] << 8) | read_buf[3];
+    cal_data->P_G = (read_buf[4] << 24) | (read_buf[5] << 16) | (read_buf[6] << 8) | read_buf[7];
+    cal_data->P_T = (read_buf[8] << 24) | (read_buf[9] << 16) | (read_buf[10] << 8) | read_buf[11];
+    cal_data->P_O = (read_buf[12] << 24) | (read_buf[13] << 16) | (read_buf[14] << 8) | read_buf[15];
+    cal_data->Aa  = (read_buf[16] << 24) | (read_buf[17] << 16) | (read_buf[18] << 8) | read_buf[19];
+    cal_data->Ab  = (read_buf[20] << 24) | (read_buf[21] << 16) | (read_buf[22] << 8) | read_buf[23];
+    cal_data->Ba  = (read_buf[24] << 24) | (read_buf[25] << 16) | (read_buf[26] << 8) | read_buf[27];
+    cal_data->Bb  = (read_buf[28] << 24) | (read_buf[29] << 16) | (read_buf[30] << 8) | read_buf[31];
+    cal_data->Ca  = (read_buf[32] << 24) | (read_buf[33] << 16) | (read_buf[34] << 8) | read_buf[35];
+    cal_data->Cb  = (read_buf[36] << 24) | (read_buf[37] << 16) | (read_buf[38] << 8) | read_buf[39];
+    cal_data->Da  = (read_buf[40] << 24) | (read_buf[41] << 16) | (read_buf[42] << 8) | read_buf[43];
+    cal_data->Db  = (read_buf[44] << 24) | (read_buf[45] << 16) | (read_buf[46] << 8) | read_buf[47];
+    cal_data->Ea  = (read_buf[48] << 24) | (read_buf[49] << 16) | (read_buf[50] << 8) | read_buf[51];
+    cal_data->Eb  = (read_buf[52] << 24) | (read_buf[53] << 16) | (read_buf[54] << 8) | read_buf[55];
+    cal_data->Fa  = (read_buf[56] << 24) | (read_buf[57] << 16) | (read_buf[58] << 8) | read_buf[59];
+    cal_data->Fb  = (read_buf[60] << 24) | (read_buf[61] << 16) | (read_buf[62] << 8) | read_buf[63];
+    cal_data->Ga  = (read_buf[64] << 24) | (read_buf[65] << 16) | (read_buf[66] << 8) | read_buf[67];
+    cal_data->Gb  = (read_buf[68] << 8)  | read_buf[69];
+    cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
+    cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
+    cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
+
+    /*
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
@@ -595,7 +531,7 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
-
+    */
 
     // !gb! moved here
     if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
@@ -890,7 +826,6 @@ int32_t mlx90632_get_channel_position(const struct device *dev)
     return (reg_status & MLX90632_STAT_CYCLE_POS) >> 2;
 }
 
-/*
 int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value)
 {
     //printk("READING FROM MLX TEMP\n");
@@ -955,7 +890,6 @@ int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, u
 
 	return ret;
 }
-*/
 
 void usleep(int min_range, int max_range)
 {
