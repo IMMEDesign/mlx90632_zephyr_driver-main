@@ -935,13 +935,17 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
 
     switch (chan) {
     case SENSOR_CHAN_DIE_TEMP:
-        val->val1 = (int)object;
-        val->val2 = (int)((object - val->val1) * 1000000);
+//        val->val1 = (int)object;
+//        val->val2 = (int)((object - val->val1) * 1000000);
+        val->val1 = (int16_t)object;
+        val->val2 = (int16_t)((object - val->val1) * 1000000);
         return 0;
 
     case SENSOR_CHAN_AMBIENT_TEMP:
-        val->val1 = (int)ambient;
-        val->val2 = (int)((ambient - val->val1) * 1000000);
+//        val->val1 = (int)ambient;
+//        val->val2 = (int)((ambient - val->val1) * 1000000);
+        val->val1 = (int16_t)ambient;
+        val->val2 = (int16_t)((ambient - val->val1) * 1000000);
         return 0;
 
     default:
