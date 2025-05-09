@@ -907,6 +907,11 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
             printk("MLX90632: lazy init failed: %d\n", ret);
             return ret;
         }
+
+        // !gb! added these two lines, similar to Niall's project
+        data->ambient_old_raw = 25;
+        data->object_old_raw = 25;
+
         data->initialized = true;
     }
 
