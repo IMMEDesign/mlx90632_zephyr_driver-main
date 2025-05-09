@@ -73,9 +73,6 @@ int32_t mlx90632_start_measurement(const struct device *dev)
 
     ret = mlx90632_wait_for_measurement(dev);
 
-    // !gb! temp
-    ret = 1;
-
     return ret;
 }
 
@@ -477,40 +474,63 @@ int32_t mlx90632_init(const struct device *dev)
         return ret;
     }
 
-    // 👇 Load full calibration block
-    uint8_t write_buff[2] = {
-        (uint8_t)(MLX90632_EE_P_R >> 8),
-        (uint8_t)(MLX90632_EE_P_R & 0x00FF)
-    };
-    uint8_t read_buf[76];
+//    // 👇 Load full calibration block
+//    uint8_t write_buff[2] = {
+//        (uint8_t)(MLX90632_EE_P_R >> 8),
+//        (uint8_t)(MLX90632_EE_P_R & 0x00FF)
+//    };
+//    uint8_t read_buf[76];
+//
+//    ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
+//    if (ret < 0) {
+//        printk("MLX90632: EEPROM read failed: %d\n", ret);
+//        return ret;
+//    }
+//
+//    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) | (read_buf[2] << 8) | read_buf[3];
+//    cal_data->P_G = (read_buf[4] << 24) | (read_buf[5] << 16) | (read_buf[6] << 8) | read_buf[7];
+//    cal_data->P_T = (read_buf[8] << 24) | (read_buf[9] << 16) | (read_buf[10] << 8) | read_buf[11];
+//    cal_data->P_O = (read_buf[12] << 24) | (read_buf[13] << 16) | (read_buf[14] << 8) | read_buf[15];
+//    cal_data->Aa  = (read_buf[16] << 24) | (read_buf[17] << 16) | (read_buf[18] << 8) | read_buf[19];
+//    cal_data->Ab  = (read_buf[20] << 24) | (read_buf[21] << 16) | (read_buf[22] << 8) | read_buf[23];
+//    cal_data->Ba  = (read_buf[24] << 24) | (read_buf[25] << 16) | (read_buf[26] << 8) | read_buf[27];
+//    cal_data->Bb  = (read_buf[28] << 24) | (read_buf[29] << 16) | (read_buf[30] << 8) | read_buf[31];
+//    cal_data->Ca  = (read_buf[32] << 24) | (read_buf[33] << 16) | (read_buf[34] << 8) | read_buf[35];
+//    cal_data->Cb  = (read_buf[36] << 24) | (read_buf[37] << 16) | (read_buf[38] << 8) | read_buf[39];
+//    cal_data->Da  = (read_buf[40] << 24) | (read_buf[41] << 16) | (read_buf[42] << 8) | read_buf[43];
+//    cal_data->Db  = (read_buf[44] << 24) | (read_buf[45] << 16) | (read_buf[46] << 8) | read_buf[47];
+//    cal_data->Ea  = (read_buf[48] << 24) | (read_buf[49] << 16) | (read_buf[50] << 8) | read_buf[51];
+//    cal_data->Eb  = (read_buf[52] << 24) | (read_buf[53] << 16) | (read_buf[54] << 8) | read_buf[55];
+//    cal_data->Fa  = (read_buf[56] << 24) | (read_buf[57] << 16) | (read_buf[58] << 8) | read_buf[59];
+//    cal_data->Fb  = (read_buf[60] << 24) | (read_buf[61] << 16) | (read_buf[62] << 8) | read_buf[63];
+//    cal_data->Ga  = (read_buf[64] << 24) | (read_buf[65] << 16) | (read_buf[66] << 8) | read_buf[67];
+//    cal_data->Gb  = (read_buf[68] << 8)  | read_buf[69];
+//    cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
+//    cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
+//    cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
 
-    ret = i2c_write_read_dt(&cfg->i2c, write_buff, 2, read_buf, 76);
-    if (ret < 0) {
-        printk("MLX90632: EEPROM read failed: %d\n", ret);
-        return ret;
-    }
+    ret = mlx90632_i2c_read32(MLX90632_EE_P_R, &cal_data->P_R);
+    ret = mlx90632_i2c_read32(MLX90632_EE_P_G, &cal_data->P_G);
+    ret = mlx90632_i2c_read32(MLX90632_EE_P_T, &cal_data->P_T);
+    ret = mlx90632_i2c_read32(MLX90632_EE_P_O, &cal_data->P_O);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Aa, &cal_data->Aa);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Ab, &cal_data->Ab);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Ba, &cal_data->Ba);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Bb, &cal_data->Bb);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Ca, &cal_data->Ca);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Cb, &cal_data->Cb);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Da, &cal_data->Da);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Db, &cal_data->Db);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Ea, &cal_data->Ea);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Eb, &cal_data->Eb);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Fa, &cal_data->Fa);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Fb, &cal_data->Fb);
+    ret = mlx90632_i2c_read32(MLX90632_EE_Ga, &cal_data->Ga);
+    ret = mlx90632_i2c_read(MLX90632_EE_Gb, &cal_data->Gb); 
+    ret = mlx90632_i2c_read(MLX90632_EE_Ka, &cal_data->Ka);
+    ret = mlx90632_i2c_read(MLX90632_EE_Ha, &cal_data->Ha);
+    ret = mlx90632_i2c_read(MLX90632_EE_Hb, &cal_data->Hb);
 
-    cal_data->P_R = (read_buf[0] << 24) | (read_buf[1] << 16) | (read_buf[2] << 8) | read_buf[3];
-    cal_data->P_G = (read_buf[4] << 24) | (read_buf[5] << 16) | (read_buf[6] << 8) | read_buf[7];
-    cal_data->P_T = (read_buf[8] << 24) | (read_buf[9] << 16) | (read_buf[10] << 8) | read_buf[11];
-    cal_data->P_O = (read_buf[12] << 24) | (read_buf[13] << 16) | (read_buf[14] << 8) | read_buf[15];
-    cal_data->Aa  = (read_buf[16] << 24) | (read_buf[17] << 16) | (read_buf[18] << 8) | read_buf[19];
-    cal_data->Ab  = (read_buf[20] << 24) | (read_buf[21] << 16) | (read_buf[22] << 8) | read_buf[23];
-    cal_data->Ba  = (read_buf[24] << 24) | (read_buf[25] << 16) | (read_buf[26] << 8) | read_buf[27];
-    cal_data->Bb  = (read_buf[28] << 24) | (read_buf[29] << 16) | (read_buf[30] << 8) | read_buf[31];
-    cal_data->Ca  = (read_buf[32] << 24) | (read_buf[33] << 16) | (read_buf[34] << 8) | read_buf[35];
-    cal_data->Cb  = (read_buf[36] << 24) | (read_buf[37] << 16) | (read_buf[38] << 8) | read_buf[39];
-    cal_data->Da  = (read_buf[40] << 24) | (read_buf[41] << 16) | (read_buf[42] << 8) | read_buf[43];
-    cal_data->Db  = (read_buf[44] << 24) | (read_buf[45] << 16) | (read_buf[46] << 8) | read_buf[47];
-    cal_data->Ea  = (read_buf[48] << 24) | (read_buf[49] << 16) | (read_buf[50] << 8) | read_buf[51];
-    cal_data->Eb  = (read_buf[52] << 24) | (read_buf[53] << 16) | (read_buf[54] << 8) | read_buf[55];
-    cal_data->Fa  = (read_buf[56] << 24) | (read_buf[57] << 16) | (read_buf[58] << 8) | read_buf[59];
-    cal_data->Fb  = (read_buf[60] << 24) | (read_buf[61] << 16) | (read_buf[62] << 8) | read_buf[63];
-    cal_data->Ga  = (read_buf[64] << 24) | (read_buf[65] << 16) | (read_buf[66] << 8) | read_buf[67];
-    cal_data->Gb  = (read_buf[68] << 8)  | read_buf[69];
-    cal_data->Ka  = (read_buf[70] << 8)  | read_buf[71];
-    cal_data->Ha  = (read_buf[72] << 8)  | read_buf[73];
-    cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
 
     // !gb! moved here
     if ((eeprom_version & 0x7F00) == MLX90632_XTD_RNG_KEY) {
