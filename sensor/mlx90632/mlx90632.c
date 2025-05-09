@@ -21,6 +21,44 @@ static const char mlx90632version[] __attribute__((used)) = { VERSION };
 #define STATIC static
 #endif
 
+//........................................................
+int16_t ambient_new_raw_dbg1;
+int16_t ambient_old_raw_dbg1;
+int16_t object_new_raw_dbg1;
+int16_t object_old_raw_dbg1;
+
+int16_t ambient_new_raw_dbg2;
+int16_t ambient_old_raw_dbg2;
+uint32_t P_T_dbg2;
+uint32_t P_R_dbg2;
+uint32_t P_G_dbg2;
+uint32_t P_O_dbg2;
+uint32_t Gb_dbg2;
+double ambient_dbg2;
+
+int16_t ambient_new_raw_dbg3;
+int16_t ambient_old_raw_dbg3;
+uint32_t Gb_dbg3;
+
+int16_t object_new_raw_dbg4;
+int16_t object_old_raw_dbg4;
+int16_t ambient_new_raw_dbg4;
+int16_t ambient_old_raw_dbg4;
+uint32_t Ka_dbg4;
+
+double pre_object_dbg5;
+double pre_ambient_dbg5;
+uint32_t Ea_dbg5;
+uint32_t Eb_dbg5;
+uint32_t Ga_dbg5;
+uint32_t Fa_dbg5;
+uint32_t Fb_dbg5;
+uint32_t Ha_dbg5;
+uint32_t Hb_dbg5;
+double object_dbg5;
+//........................................................
+
+
 int32_t mlx90632_trigger_measurement(const struct device *dev)
 {
     uint16_t reg_status;
@@ -1166,6 +1204,10 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
     ret = mlx90632_read_temp_raw(dev, &data->ambient_new_raw, &data->ambient_old_raw,
                                        &data->object_new_raw, &data->object_old_raw);
 
+    ambient_new_raw_dbg1 = data->ambient_new_raw;
+    ambient_old_raw_dbg1 = data->ambient_old_raw;
+    object_new_raw_dbg1 = data->object_new_raw;
+    object_old_raw_dbg1 = data->object_old_raw;
     return ret;
 }
 
@@ -1173,18 +1215,44 @@ static int mlx90632_channel_get(const struct device *dev, enum sensor_channel ch
 {
     struct mlx90632_data *data = dev->data;
 
+    ambient_new_raw_dbg2 = data->ambient_new_raw;
+    ambient_old_raw_dbg2 = data->ambient_old_raw;
+    P_T_dbg2 = data->P_T;
+    P_R_dbg2 = data->P_R;
+    P_G_dbg2 = data->P_G;
+    P_O_dbg2 = data->P_O;
+    Gb_dbg2 = data->Gb;
     double ambient = mlx90632_calc_temp_ambient(
         data->ambient_new_raw, data->ambient_old_raw,
         data->P_T, data->P_R, data->P_G, data->P_O, data->Gb);
+    ambient_dbg2 = ambient;
 
+    ambient_new_raw_dbg3 = data->ambient_new_raw;
+    ambient_old_raw_dbg3 = data->ambient_old_raw;
+    Gb_dbg3 = data->Gb;
     double pre_ambient = mlx90632_preprocess_temp_ambient(data->ambient_new_raw,
         data->ambient_old_raw, data->Gb);
 
+    object_new_raw_dbg4 = data->object_new_raw;
+    object_old_raw_dbg4 = data->object_old_raw;
+    ambient_new_raw_dbg4 = data->ambient_new_raw;
+    ambient_old_raw_dbg4 = data->ambient_old_raw;
+    Ka_dbg4 = data->Ka;
     double pre_object = mlx90632_preprocess_temp_object(data->object_new_raw,
         data->object_old_raw, data->ambient_new_raw, data->ambient_old_raw, data->Ka);
 
+    pre_object_dbg5 = pre_object;
+    pre_ambient_dbg5 = pre_ambient;
+    Ea_dbg5 = data->Ea;
+    Eb_dbg5 = data->Eb;
+    Ga_dbg5 = data->Ga;
+    Fa_dbg5 = data->Fa;
+    Fb_dbg5 = data->Fb;
+    Ha_dbg5 = data->Ha;
+    Hb_dbg5 = data->Hb;
     double object = mlx90632_calc_temp_object(pre_object, pre_ambient,
         data->Ea, data->Eb, data->Ga, data->Fa, data->Fb, data->Ha, data->Hb);
+    object_dbg5 = object;
 
     //printk("mlx90632_channel_get: chan = %d\n", chan);
 
