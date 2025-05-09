@@ -21,6 +21,71 @@ static const char mlx90632version[] __attribute__((used)) = { VERSION };
 #define STATIC static
 #endif
 
+int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value)
+{
+    //printk("READING FROM MLX TEMP\n");
+    uint8_t buffer[2]; // Buffer to store 2 bytes read from the I2C device
+    uint8_t i2c_write_buff[2];
+    int32_t ret;
+    const struct mlx90632_config *cfg = dev->config;
+
+
+    i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
+    i2c_write_buff[1] = ( register_address & 0xFF);
+
+    ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 2);
+    
+    if (ret < 0) {
+        return ret; // Return error code if i2c_read fails
+    }
+
+    // Combine the two bytes into a 16-bit value (assuming big-endian order from the device)
+    *value = ((uint16_t)buffer[0] << 8) | buffer[1];
+
+    return 0; // Success
+}
+int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value)
+{
+    //printk("READING FROM MLX TEMP\n");
+    uint8_t buffer[4]; // Buffer to store 4 bytes read from the I2C device
+    uint8_t i2c_write_buff[2];
+    int32_t ret;
+
+    const struct mlx90632_config *cfg = dev->config;
+
+
+    i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
+    i2c_write_buff[1] = ( register_address & 0xFF);
+
+    ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 4);
+    if (ret < 0) {
+        return ret; // Return error code if i2c_read fails
+    }
+
+    // Combine the four bytes into a 32-bit value (assuming big-endian order from the device)
+    *value = ((uint32_t)buffer[2] << 24) | ((uint32_t)buffer[3] << 16) | ((uint32_t)buffer[0] << 8) | (uint32_t)buffer[1];
+
+    return 0; // Success
+}
+int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, uint16_t value)
+{
+
+    uint8_t data[4];
+    int ret;
+    const struct mlx90632_config *cfg = dev->config;
+
+    data[0] = (uint8_t)(register_address >> 8);
+    data[1] = (uint8_t)(register_address & 0xFF);
+
+    data[2] = (uint8_t)(value >> 8);
+    data[3] = (uint8_t)(value & 0xFF);
+
+
+    ret = i2c_write_dt(&cfg->i2c, data, 4);
+
+    return ret;
+}
+
 int32_t mlx90632_trigger_measurement(const struct device *dev)
 {
     uint16_t reg_status;
@@ -825,6 +890,7 @@ int32_t mlx90632_get_channel_position(const struct device *dev)
     return (reg_status & MLX90632_STAT_CYCLE_POS) >> 2;
 }
 
+/*
 int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value)
 {
     //printk("READING FROM MLX TEMP\n");
@@ -889,6 +955,7 @@ int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, u
 
 	return ret;
 }
+*/
 
 void usleep(int min_range, int max_range)
 {
