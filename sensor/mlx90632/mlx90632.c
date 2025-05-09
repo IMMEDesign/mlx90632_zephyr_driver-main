@@ -512,131 +512,131 @@ int32_t mlx90632_init(const struct device *dev)
     */
 
     uint8_t read_buf[4];
-    uint8_t write_buff2[2] ;
+    uint8_t write_buff[2] ;
 
     write_buff[2] = {(uint8_t)(MLX90632_EE_P_R >> 8), (uint8_t)(MLX90632_EE_P_R & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->P_R, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->P_R, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_P_R read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_P_G >> 8), (uint8_t)(MLX90632_EE_P_G & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->P_G, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->P_G, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_P_G read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_P_T >> 8), (uint8_t)(MLX90632_EE_P_T & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->P_T, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->P_T, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_P_T read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_P_O >> 8), (uint8_t)(MLX90632_EE_P_O & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->P_O, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->P_O, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_P_O read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Aa >> 8), (uint8_t)(MLX90632_EE_Aa & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Aa, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Aa, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Aa read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ab >> 8), (uint8_t)(MLX90632_EE_Ab & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ab, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Ab, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ab read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ba >> 8), (uint8_t)(MLX90632_EE_Ba & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ba, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Ba, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ba read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Bb >> 8), (uint8_t)(MLX90632_EE_Bb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Bb, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Bb, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Bb read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ca >> 8), (uint8_t)(MLX90632_EE_Ca & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ca, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Ca, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ca read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Cb >> 8), (uint8_t)(MLX90632_EE_Cb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Cb, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Cb, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Cb read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Da >> 8), (uint8_t)(MLX90632_EE_Da & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Da, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Da, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Da read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Db >> 8), (uint8_t)(MLX90632_EE_Db & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Db, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Db, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Db read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ea >> 8), (uint8_t)(MLX90632_EE_Ea & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ea, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Ea, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ea read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Eb >> 8), (uint8_t)(MLX90632_EE_Eb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Eb, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Eb, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Eb read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Fa >> 8), (uint8_t)(MLX90632_EE_Fa & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Fa, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Fa, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Fa read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Fb >> 8), (uint8_t)(MLX90632_EE_Fb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Fb, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Fb, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Fb read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ga >> 8), (uint8_t)(MLX90632_EE_Ga & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ga, write_buff2, 2, read_buf, 4);
+    ret = i2c_write_read_dt(&cal_data->Ga, write_buff, 2, read_buf, 4);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ga read failed: %d\n", ret);
         return ret;
     }
 
     write_buff[2] = {(uint8_t)(MLX90632_EE_Gb >> 8), (uint8_t)(MLX90632_EE_Gb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Gb, write_buff2, 2, read_buf, 2);
+    ret = i2c_write_read_dt(&cal_data->Gb, write_buff, 2, read_buf, 2);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Gb read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ka >> 8), (uint8_t)(MLX90632_EE_Ka & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ka, write_buff2, 2, read_buf, 2);
+    ret = i2c_write_read_dt(&cal_data->Ka, write_buff, 2, read_buf, 2);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ka read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Ha >> 8), (uint8_t)(MLX90632_EE_Ha & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Ha, write_buff2, 2, read_buf, 2);
+    ret = i2c_write_read_dt(&cal_data->Ha, write_buff, 2, read_buf, 2);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Ha read failed: %d\n", ret);
         return ret;
     }
     write_buff[2] = {(uint8_t)(MLX90632_EE_Hb >> 8), (uint8_t)(MLX90632_EE_Hb & 0x00FF)};
-    ret = i2c_write_read_dt(&cal_data->Hb, write_buff2, 2, read_buf, 2);
+    ret = i2c_write_read_dt(&cal_data->Hb, write_buff, 2, read_buf, 2);
     if (ret < 0) {
         printk("MLX90632: MLX90632_EE_Hb read failed: %d\n", ret);
         return ret;
