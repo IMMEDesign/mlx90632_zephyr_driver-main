@@ -493,22 +493,26 @@ int32_t mlx90632_init(const struct device *dev)
 
     ret = mlx90632_i2c_read(dev, MLX90632_EE_VERSION, &eeprom_version);
     if (ret < 0) {
+        printk("MLX90632: fail to read eeprom\n");
         return ret;
     }
 
     if ((eeprom_version & 0x00FF) != MLX90632_DSPv5) {
         // this here can fail because of big/little endian of cpu/i2c
+        printk("MLX90632: eeprom versionm fail\n");
         return -EPROTONOSUPPORT;
     }
 
     ret = mlx90632_i2c_read(dev, MLX90632_REG_STATUS, &reg_status);
     if (ret < 0) {
+        printk("MLX90632: fail to read status\n");
         return ret;
     }
 
     // Prepare a clean start with setting NEW_DATA to 0
     ret = mlx90632_i2c_write(dev, MLX90632_REG_STATUS, reg_status & ~(MLX90632_STAT_DATA_RDY));
     if (ret < 0) {
+        printk("MLX90632: fail to update status\n");
         return ret;
     }
 
