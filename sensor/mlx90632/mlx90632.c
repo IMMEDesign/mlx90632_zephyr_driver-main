@@ -788,6 +788,31 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
     */
 
+    // !dbg! - start
+    printk("P_R: %u\n", cal_data->P_R);
+    printk("P_G: %u\n", cal_data->P_G);
+    printk("P_T: %u\n", cal_data->P_T);
+    printk("P_O: %u\n", cal_data->P_O);
+    printk("Aa: %u\n", cal_data->Aa);
+    printk("Ab: %u\n", cal_data->Ab);
+    printk("Ba: %u\n", cal_data->Ba);
+    printk("Bb: %u\n", cal_data->Bb);
+    printk("Ca: %u\n", cal_data->Ca);
+    printk("Cb: %u\n", cal_data->Cb);
+    printk("Da: %u\n", cal_data->Da);
+    printk("Db: %u\n", cal_data->Db);
+    printk("Ea: %u\n", cal_data->Ea);
+    printk("Eb: %u\n", cal_data->Eb);
+    printk("Fa: %u\n", cal_data->Fa);
+    printk("Fb: %u\n", cal_data->Fb);
+    printk("Ga: %u\n", cal_data->Ga);
+    printk("Gb: %u\n", cal_data->Gb);
+    printk("Ka: %u\n", cal_data->Ka);
+    printk("Ha: %u\n", cal_data->Ha);
+    printk("Hb: %u\n", cal_data->Hb);
+    // !dbg! - end
+
+
     // !gb! Added here, as taken from Niall's working project
     mlx90632_set_emissivity(0.98f);
 
