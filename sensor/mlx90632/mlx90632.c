@@ -603,7 +603,7 @@ int32_t mlx90632_init(const struct device *dev)
 
     // Put the device in sleeping step mode in order to safely read the EEPROM
     uint32_t meas_typ;
-    meas_typ = mlx90632_get_meas_type();
+    meas_typ = mlx90632_get_meas_type(dev);
     printk("Measurement Type: %u", meas_typ);
 
     // !gb! Added here, as taken from Niall's working project
@@ -899,7 +899,7 @@ int32_t mlx90632_get_channel_position(const struct device *dev)
     return (reg_status & MLX90632_STAT_CYCLE_POS) >> 2;
 }
 
-int32_t mlx90632_set_meas_type(uint8_t type)
+int32_t mlx90632_set_meas_type(const struct device *dev, uint8_t type)
 {
     int32_t ret;
     uint16_t reg_ctrl;
@@ -911,18 +911,18 @@ int32_t mlx90632_set_meas_type(uint8_t type)
     if (ret < 0)
         return ret;
 
-    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_ctrl);
+    ret = mlx90632_i2c_read(dev, MLX90632_REG_CTRL, &reg_ctrl);
     if (ret < 0)
         return ret;
 
     reg_ctrl = reg_ctrl & (~MLX90632_CFG_MTYP_MASK & ~MLX90632_CFG_PWR_MASK);
     reg_ctrl |= (MLX90632_MTYP_STATUS(MLX90632_MEASUREMENT_TYPE_STATUS(type)) | MLX90632_PWR_STATUS_HALT);
 
-    ret = mlx90632_i2c_write(MLX90632_REG_CTRL, reg_ctrl);
+    ret = mlx90632_i2c_write(dev, MLX90632_REG_CTRL, reg_ctrl);
     if (ret < 0)
         return ret;
 
-    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_ctrl);
+    ret = mlx90632_i2c_read(dev, MLX90632_REG_CTRL, &reg_ctrl);
     if (ret < 0)
         return ret;
 
@@ -936,18 +936,18 @@ int32_t mlx90632_set_meas_type(uint8_t type)
         reg_ctrl |= MLX90632_PWR_STATUS_CONTINUOUS;
     }
 
-    ret = mlx90632_i2c_write(MLX90632_REG_CTRL, reg_ctrl);
+    ret = mlx90632_i2c_write(dev, MLX90632_REG_CTRL, reg_ctrl);
 
     return ret;
 }
 
-int32_t mlx90632_get_meas_type(void)
+int32_t mlx90632_get_meas_type(const struct device *dev)
 {
     int32_t ret;
     uint16_t reg_ctrl;
     uint16_t reg_temp;
 
-    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_temp);
+    ret = mlx90632_i2c_read(dev, MLX90632_REG_CTRL, &reg_temp);
     if (ret < 0)
         return ret;
 
