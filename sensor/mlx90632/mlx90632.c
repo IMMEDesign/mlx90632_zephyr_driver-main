@@ -789,6 +789,7 @@ int32_t mlx90632_init(const struct device *dev)
     */
 
     // !dbg! - start
+    /*
     printk("P_R: %u\n", cal_data->P_R);
     printk("P_G: %u\n", cal_data->P_G);
     printk("P_T: %u\n", cal_data->P_T);
@@ -810,6 +811,29 @@ int32_t mlx90632_init(const struct device *dev)
     printk("Ka: %u\n", cal_data->Ka);
     printk("Ha: %u\n", cal_data->Ha);
     printk("Hb: %u\n", cal_data->Hb);
+    */
+    printk("P_R: 0x%08x\n", cal_data->P_R);
+    printk("P_G: 0x%08x\n", cal_data->P_G);
+    printk("P_T: 0x%08x\n", cal_data->P_T);
+    printk("P_O: 0x%08x\n", cal_data->P_O);
+    printk("Aa: 0x%08x\n", cal_data->Aa);
+    printk("Ab: 0x%08x\n", cal_data->Ab);
+    printk("Ba: 0x%08x\n", cal_data->Ba);
+    printk("Bb: 0x%08x\n", cal_data->Bb);
+    printk("Ca: 0x%08x\n", cal_data->Ca);
+    printk("Cb: 0x%08x\n", cal_data->Cb);
+    printk("Da: 0x%08x\n", cal_data->Da);
+    printk("Db: 0x%08x\n", cal_data->Db);
+    printk("Ea: 0x%08x\n", cal_data->Ea);
+    printk("Eb: 0x%08x\n", cal_data->Eb);
+    printk("Fa: 0x%08x\n", cal_data->Fa);
+    printk("Fb: 0x%08x\n", cal_data->Fb);
+    printk("Ga: 0x%08x\n", cal_data->Ga);
+    printk("Gb: 0x%08x\n", cal_data->Gb);
+    printk("Ka: 0x%08x\n", cal_data->Ka);
+    printk("Ha: 0x%08x\n", cal_data->Ha);
+    printk("Hb: 0x%08x\n", cal_data->Hb);
+
     // !dbg! - end
 
 
