@@ -575,7 +575,7 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
-    
+
 
     // !dbg! - start
     printk("P_R: 0x%08x\n", cal_data->P_R);
@@ -601,6 +601,10 @@ int32_t mlx90632_init(const struct device *dev)
     printk("Hb: 0x%08x\n", cal_data->Hb);
     // !dbg! - end
 
+    // Put the device in sleeping step mode in order to safely read the EEPROM
+    uint32_t meas_typ;
+    meas_typ = mlx90632_get_meas_type();
+    printk("Measurement Type: %u", meas_typ);
 
     // !gb! Added here, as taken from Niall's working project
     mlx90632_set_emissivity(0.98f);
@@ -893,6 +897,74 @@ int32_t mlx90632_get_channel_position(const struct device *dev)
         return ret;
 
     return (reg_status & MLX90632_STAT_CYCLE_POS) >> 2;
+}
+
+int32_t mlx90632_set_meas_type(uint8_t type)
+{
+    int32_t ret;
+    uint16_t reg_ctrl;
+
+    if ((type != MLX90632_MTYP_MEDICAL) & (type != MLX90632_MTYP_EXTENDED) & (type != MLX90632_MTYP_MEDICAL_BURST) & (type != MLX90632_MTYP_EXTENDED_BURST))
+        return -EINVAL;
+
+    ret = mlx90632_addressed_reset();
+    if (ret < 0)
+        return ret;
+
+    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_ctrl);
+    if (ret < 0)
+        return ret;
+
+    reg_ctrl = reg_ctrl & (~MLX90632_CFG_MTYP_MASK & ~MLX90632_CFG_PWR_MASK);
+    reg_ctrl |= (MLX90632_MTYP_STATUS(MLX90632_MEASUREMENT_TYPE_STATUS(type)) | MLX90632_PWR_STATUS_HALT);
+
+    ret = mlx90632_i2c_write(MLX90632_REG_CTRL, reg_ctrl);
+    if (ret < 0)
+        return ret;
+
+    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_ctrl);
+    if (ret < 0)
+        return ret;
+
+    reg_ctrl = reg_ctrl & ~MLX90632_CFG_PWR_MASK;
+    if (MLX90632_MEASUREMENT_BURST_STATUS(type))
+    {
+        reg_ctrl |= MLX90632_PWR_STATUS_SLEEP_STEP;
+    }
+    else
+    {
+        reg_ctrl |= MLX90632_PWR_STATUS_CONTINUOUS;
+    }
+
+    ret = mlx90632_i2c_write(MLX90632_REG_CTRL, reg_ctrl);
+
+    return ret;
+}
+
+int32_t mlx90632_get_meas_type(void)
+{
+    int32_t ret;
+    uint16_t reg_ctrl;
+    uint16_t reg_temp;
+
+    ret = mlx90632_i2c_read(MLX90632_REG_CTRL, &reg_temp);
+    if (ret < 0)
+        return ret;
+
+    reg_ctrl = MLX90632_MTYP(reg_temp);
+
+    if ((reg_ctrl != MLX90632_MTYP_MEDICAL) & (reg_ctrl != MLX90632_MTYP_EXTENDED))
+        return -EINVAL;
+
+    reg_temp = MLX90632_CFG_PWR(reg_temp);
+
+    if (reg_temp == MLX90632_PWR_STATUS_SLEEP_STEP)
+        return MLX90632_BURST_MEASUREMENT_TYPE(reg_ctrl);
+
+    if (reg_temp != MLX90632_PWR_STATUS_CONTINUOUS)
+        return -EINVAL;
+
+    return reg_ctrl;
 }
 
 int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value)
