@@ -553,6 +553,7 @@ int32_t mlx90632_init(const struct device *dev)
     cal_data->Hb  = (read_buf[74] << 8)  | read_buf[75];
     */
 
+    /*
     uint8_t read_buf[4];
     uint8_t write_buff[2] ;
 
@@ -762,9 +763,10 @@ int32_t mlx90632_init(const struct device *dev)
         return ret;
     }
     cal_data->Hb = (read_buf[0] << 8)  |  read_buf[1];
+    */
 
 
-    /*
+    
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_R, &cal_data->P_R);
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_G, &cal_data->P_G);
     ret = mlx90632_i2c_read32(dev, MLX90632_EE_P_T, &cal_data->P_T);
@@ -786,7 +788,7 @@ int32_t mlx90632_init(const struct device *dev)
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ka, &cal_data->Ka);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Ha, &cal_data->Ha);
     ret = mlx90632_i2c_read(dev, MLX90632_EE_Hb, &cal_data->Hb);
-    */
+    
 
     // !dbg! - start
     /*
