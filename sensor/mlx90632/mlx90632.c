@@ -907,7 +907,7 @@ int32_t mlx90632_set_meas_type(const struct device *dev, uint8_t type)
     if ((type != MLX90632_MTYP_MEDICAL) & (type != MLX90632_MTYP_EXTENDED) & (type != MLX90632_MTYP_MEDICAL_BURST) & (type != MLX90632_MTYP_EXTENDED_BURST))
         return -EINVAL;
 
-    ret = mlx90632_addressed_reset();
+    ret = mlx90632_addressed_reset(dev);
     if (ret < 0)
         return ret;
 
