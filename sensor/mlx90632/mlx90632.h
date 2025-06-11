@@ -430,7 +430,7 @@ int32_t mlx90632_trigger_measurement(const struct device *dev);
  * @retval <0 Something failed. Check errno.h for more information
  * @retval >=0 Channel position where new (recently updated) measurement can be found
  *
- * @note This function is using usleep so it is blocking!
+ * @note This function is using u_sleep so it is blocking!
  */
 int32_t mlx90632_wait_for_measurement(const struct device *dev);
 
@@ -441,7 +441,7 @@ int32_t mlx90632_wait_for_measurement(const struct device *dev);
  * @retval <0 Something failed. Check errno.h for more information
  * @retval >=0 Channel position where new (recently updated) measurement can be found
  *
- * @note This function is using usleep so it is blocking!
+ * @note This function is using u_sleep so it is blocking!
  */
 int32_t mlx90632_start_measurement(const struct device *dev);
 
@@ -480,7 +480,7 @@ int32_t mlx90632_trigger_measurement_burst(const struct device *dev);
  * @retval <0 Something failed. Check errno.h for more information
  * @retval 0 New data is available and waiting to be processed
  *
- * @note This function is using usleep so it is blocking!
+ * @note This function is using u_sleep so it is blocking!
  */
 int32_t mlx90632_wait_for_measurement_burst(const struct device *dev);
 
@@ -494,7 +494,7 @@ int32_t mlx90632_wait_for_measurement_burst(const struct device *dev);
  * @retval <0 Something failed. Check errno.h for more information
  * @retval 0 New data is available and waiting to be processed
  *
- * @note This function is using usleep and msleep. Because of usleep it is blocking, while msleep implementation can have a thread switch!
+ * @note This function is using u_sleep and msleep. Because of u_sleep it is blocking, while msleep implementation can have a thread switch!
  * In case both are blocking expect up to 2 second freeze of CPU in worse case scenario (depending on Refresh rate setting), so
  * you might also need to take care of Watch Dog.
  */
@@ -541,7 +541,7 @@ int32_t mlx90632_calculate_dataset_ready_time(const struct device *dev);
  * @retval <0 Something failed. Check errno.h for more information
  * @retval 0 The mlx90632 device was properly reset and is now ready for communication.
  *
- * @note This function is using usleep so it is blocking!
+ * @note This function is using u_sleep so it is blocking!
  */
 int32_t mlx90632_addressed_reset(const struct device *dev);
 
@@ -570,7 +570,7 @@ int32_t mlx90632_get_channel_position(const struct device *dev);
 int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, uint16_t *value);
 int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value);
 int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, uint16_t value);
-void usleep(int min_range, int max_range);
+void u_sleep(int min_range, int max_range);
 void msleep(int msecs);
 
 
