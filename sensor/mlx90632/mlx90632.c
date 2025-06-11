@@ -90,7 +90,7 @@ int32_t mlx90632_wait_for_measurement(const struct device *dev)
          * should be calculated according to refresh rate
          * atm 10ms - 11ms
          */
-        usleep(10000, 11000);
+        u_sleep(10000, 11000);
     }
 
     if (tries < 0)
@@ -604,7 +604,7 @@ int32_t mlx90632_init(const struct device *dev)
     // Put the device in sleeping step mode in order to safely read the EEPROM
     uint32_t meas_typ;
     meas_typ = mlx90632_get_meas_type(dev);
-    printk("Measurement Type: %u", meas_typ);
+    printk("Measurement Type: %u\n", meas_typ);
 
     // !gb! Added here, as taken from Niall's working project
     mlx90632_set_emissivity(0.98f);
@@ -637,7 +637,7 @@ int32_t mlx90632_addressed_reset(const struct device *dev)
     if (ret < 0)
         return ret;
 
-    usleep(150, 200);
+    u_sleep(150, 200);
 
     ret = mlx90632_i2c_write(dev, MLX90632_REG_CTRL, reg_value);
 
@@ -742,7 +742,7 @@ int32_t mlx90632_wait_for_measurement_burst(const struct device *dev)
          * should be calculated according to refresh rate
          * atm 10ms - 11ms
          */
-        usleep(10000, 11000);
+        u_sleep(10000, 11000);
     }
 
     if (tries < 0)
@@ -1032,7 +1032,7 @@ int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, u
 	return ret;
 }
 
-void usleep(int min_range, int max_range)
+void u_sleep(int min_range, int max_range)
 {
     k_sleep(K_USEC(min_range));
 
@@ -1069,7 +1069,7 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
         // the i2c bus / devices are ready.
 
         // !gb! trying this
-        usleep(150, 200);        printk("MLX90632: first fetch\n");
+        u_sleep(150, 200);        printk("MLX90632: first fetch\n");
         
         int ret = mlx90632_init(dev);  // EEPROM read, DSP version check, etc.
         if (ret < 0) {
@@ -1081,7 +1081,7 @@ static int mlx90632_sample_fetch(const struct device *dev, enum sensor_channel c
         data->ambient_old_raw = 25;
         data->object_old_raw = 25;
         // !gb! trying this
-        usleep(150, 200);
+        u_sleep(150, 200);
 
 
         data->initialized = true;
