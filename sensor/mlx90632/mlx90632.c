@@ -1013,18 +1013,18 @@ int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, ui
 
 //     return 0; // Success
 // }
-int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value)
+int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address_lsb, uint32_t *value)
 {
-    uint16_t high, low;
+    uint16_t low, high;
     int32_t ret;
 
-    // Read the upper 16 bits (MSB)
-    ret = mlx90632_i2c_read(dev, register_address, &high);
+    // Read lower 16 bits (LSB) first
+    ret = mlx90632_i2c_read(dev, register_address_lsb, &low);
     if (ret < 0)
         return ret;
 
-    // Read the lower 16 bits (LSB)
-    ret = mlx90632_i2c_read(dev, register_address + 2, &low);
+    // Read upper 16 bits (MSB) from the next register
+    ret = mlx90632_i2c_read(dev, register_address_lsb + 1, &high);
     if (ret < 0)
         return ret;
 
