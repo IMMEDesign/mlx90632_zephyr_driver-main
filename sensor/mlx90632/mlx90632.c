@@ -491,8 +491,6 @@ int32_t mlx90632_init(const struct device *dev)
     struct mlx90632_data *cal_data = dev->data;
     const struct mlx90632_config *cfg = dev->config;
 
-    msleep(100);        // !dbg! !del!
-
     ret = mlx90632_i2c_read(dev, MLX90632_EE_VERSION, &eeprom_version);
     if (ret < 0) {
         printk("MLX90632: fail to read eeprom\n");
