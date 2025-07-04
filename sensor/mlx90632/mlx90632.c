@@ -990,29 +990,48 @@ int32_t mlx90632_i2c_read(const struct device *dev, int16_t register_address, ui
 
     return 0; // Success
 }
+// int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value)
+// {
+//     //printk("READING FROM MLX TEMP\n");
+//     uint8_t buffer[4]; // Buffer to store 4 bytes read from the I2C device
+//     uint8_t i2c_write_buff[2];
+//     int32_t ret;
+
+//     const struct mlx90632_config *cfg = dev->config;
+
+
+// 	i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
+// 	i2c_write_buff[1] = ( register_address & 0xFF);
+
+//     ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 4);
+//     if (ret < 0) {
+//         return ret; // Return error code if i2c_read fails
+//     }
+
+//     // Combine the four bytes into a 32-bit value (assuming big-endian order from the device)
+//     *value = ((uint32_t)buffer[2] << 24) | ((uint32_t)buffer[3] << 16) | ((uint32_t)buffer[0] << 8) | (uint32_t)buffer[1];
+
+//     return 0; // Success
+// }
 int32_t mlx90632_i2c_read32(const struct device *dev, int16_t register_address, uint32_t *value)
 {
-    //printk("READING FROM MLX TEMP\n");
-    uint8_t buffer[4]; // Buffer to store 4 bytes read from the I2C device
-    uint8_t i2c_write_buff[2];
+    uint16_t high, low;
     int32_t ret;
 
-    const struct mlx90632_config *cfg = dev->config;
+    // Read the upper 16 bits (MSB)
+    ret = mlx90632_i2c_read(dev, register_address, &high);
+    if (ret < 0)
+        return ret;
 
+    // Read the lower 16 bits (LSB)
+    ret = mlx90632_i2c_read(dev, register_address + 2, &low);
+    if (ret < 0)
+        return ret;
 
-	i2c_write_buff[0] = ( register_address >> 8 ) & 0xFF;
-	i2c_write_buff[1] = ( register_address & 0xFF);
-
-    ret = i2c_write_read_dt(&cfg->i2c, i2c_write_buff, 2, &buffer, 4);
-    if (ret < 0) {
-        return ret; // Return error code if i2c_read fails
-    }
-
-    // Combine the four bytes into a 32-bit value (assuming big-endian order from the device)
-    *value = ((uint32_t)buffer[2] << 24) | ((uint32_t)buffer[3] << 16) | ((uint32_t)buffer[0] << 8) | (uint32_t)buffer[1];
-
-    return 0; // Success
+    *value = ((uint32_t)high << 16) | low;
+    return 0;
 }
+
 int32_t mlx90632_i2c_write(const struct device *dev, int16_t register_address, uint16_t value)
 {
 
